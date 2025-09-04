@@ -1,0 +1,8 @@
+{
+    "TZ": {
+        "optional": false,
+        "nullable": false,
+        "pattern": "[A-Za-z\\_]+\/[A-Za-z\\_]",
+        "default": "America/Los_Angeles"
+    }
+}

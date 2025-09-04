@@ -1,0 +1,6 @@
+TZ:
+  optional: false
+  nullable: false
+  validate:
+    pattern: "[A-Za-z\\_]+\/[A-Za-z\\_]"
+  default: "America/Los_Angeles"

@@ -1,0 +1,40 @@
+x-volume-mounts: &volumes
+  - ./README.md:/README.md
+  - ./source/configures:/source/configures
+  - ./source/configures:/usr/local/lib/python/site-packages/configures
+  - ./tests:/tests
+
+services:
+
+  black:
+    build:
+      dockerfile: ./Dockerfile
+      context: ./
+    environment:
+      - SERVICE=black
+    env_file:
+      .env
+    volumes:
+      *volumes
+
+  flakes:
+    build:
+      dockerfile: ./Dockerfile
+      context: ./
+    environment:
+      - SERVICE=flakes
+    env_file:
+      .env
+    volumes:
+      *volumes
+
+  tests:
+    build:
+      dockerfile: ./Dockerfile
+      context: ./
+    environment:
+      - SERVICE=tests
+    env_file:
+      .env
+    volumes:
+      *volumes
