@@ -321,7 +321,7 @@ the secret if the secret has not been defined in the current runtime environment
 Below is an example highlighting the structure of a possible rule:
 
 ```shell
-?TZ=([A-Za-z]+(\_[A-Za-z]+)?/[A-Za-z\_]+(\_[A-Za-z])?)[America/Los_Angeles]
+?TZ=([A-Za-z]+(_[A-Za-z]+)?/[A-Za-z_]+(_[A-Za-z])?)[America/Los_Angeles]
 ```
 
 The rule specifies that the `TZ` secret is optional as the line starts with a `?` character, but if it is specified, its value must consist of at least one of characters `A-Z` or `a-z`, optionally followed by one or more additional characters from the range `A-Z`, `a-z` and `_`, then followed by a required `/` separator character which must then be followed by one or more of the characters `A-Z`, `a-z`, optionally followed by one or more of the characters `A-Z`, `a-z` and `_`, such that a value like `America/New_York` would be considered valid, whereas a value like `123` or `America` would not.
@@ -342,21 +342,24 @@ with one or more nested JSON dictionaries expressed according to the pattern bel
 ```json
 {
     "<secret-name>": {
-        "optional": <optional>,
-        "nullable": <nullable>,
+        "optional": "<optional>",
+        "nullable": "<nullable>",
         "validate": {
-            "pattern": <pattern>
+            "pattern": "<pattern>"
         },
-        "default": <default>
+        "default": "<default>"
     },
-    ...
     "<secret-name>": {
-        "optional": <optional>,
-        "nullable": <nullable>,
+        "optional": "<optional>",
+        "nullable": "<nullable>",
         "validate": {
-            "options": ...
+            "options": [
+                "RED",
+                "GREEN",
+                "BLUE"
+            ]
         },
-        "default": <default>
+        "default": "<default>"
     }
 }
 ```
@@ -386,7 +389,7 @@ must be provided via the `validate.options` key-path for the relevant secret.
 Each secret will be validated through the validation mechanisms that have been defined for it in the specification. One should ensure the validations are compatible with each other – that is that a secret value will either match or fail to match through all of the validation mechanisms defined for a given secret. A validation regular expression for example should not result in a match when the corresponding options list match would fail or vice-versa.
 
 If no validation mechanism are defined for a given secret, only the presence of the configuration variable will be checked, and unless it is marked as being optional, a `ConfigurationError` will be raised if it has not been defined.
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                               
+
 An example JSON-serialised secrets specification may look something like the following:
 
 ```json
@@ -395,7 +398,7 @@ An example JSON-serialised secrets specification may look something like the fol
         "optional": false,
         "nullable": false,
         "validate": {
-            "pattern": "[A-Z]{1}[A-Za-z]+/[A-Za-z\_]+(\_[A-Za-z])?"
+            "pattern": "[A-Z]{1}[A-Za-z]+/[A-Za-z_]+(_[A-Za-z])?"
         },
         "default": "America/Los_Angeles"
     },
@@ -471,7 +474,7 @@ TIMEZONE:
   optional: false
   nullable: false
   validate:
-    pattern: '[A-Z]{1}[A-Za-z]+/[A-Za-z\_]+(\_[A-Za-z])?'
+    pattern: '[A-Z]{1}[A-Za-z]+/[A-Za-z_]+(_[A-Za-z])?'
   default: America/Los_Angeles
 
 UI_COLOR_THEME:
