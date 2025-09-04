@@ -35,9 +35,15 @@ jobs:
         black ./source ./tests --check
     - name: Load .env variables
       run: |
-        set -a # automatically export all variables
-        source .env.example
-        set +a # turn off automatic exporting
+        # Copy the contents of the .env.example file from the repository
+        cat .env.example > .env
+        # Read each line from .env file and export it to $GITHUB_ENV
+        while IFS= read -r line; do
+          # Process lines that use the key=value pattern and are not comment lines
+          if [[ "$line" =~ ^[^#]*= ]]; then
+            echo "$line" >> $GITHUB_ENV
+          fi
+        done < .env
     - name: Test with PyTest
       run: |
         # Stop the build if there are any unit test failures
