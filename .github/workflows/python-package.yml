@@ -33,6 +33,11 @@ jobs:
       run: |
         # Stop the build if there are any Python syntax or formatting errors
         black ./source ./tests --check
+    - name: Load .env variables
+      run: |
+        set -a # automatically export all variables
+        source .env.example
+        set +a # turn off automatic exporting
     - name: Test with PyTest
       run: |
         # Stop the build if there are any unit test failures
