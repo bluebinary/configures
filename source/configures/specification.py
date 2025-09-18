@@ -223,7 +223,7 @@ class SpecificationFile(Specification):
         defaults: dict = {}
 
         pattern = re.compile(
-            r"(?P<optional>\?)?(?P<name>[A-Za-z][A-Za-z0-9_]+)(?P<nullable>\?)?(=\((?P<pattern>.*?)\)(\[(?P<default>.*)\])?)?"
+            r"(?P<optional>\?)?(?P<name>[A-Za-z][A-Za-z0-9_]+)(?P<nullable>\?)?(=\((?P<pattern>.*)\)(\[(?P<default>.*)\])?)?"
         )
 
         with open(filename, "r") as handle:
