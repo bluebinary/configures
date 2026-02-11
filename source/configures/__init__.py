@@ -25,7 +25,6 @@ from configures.validator import (
 
 from configures.variable import Variable
 
-
 __all__ = [
     # Exception Classes
     "ConfiguresError",

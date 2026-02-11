@@ -116,6 +116,10 @@ class Specification(object, metaclass=abc.ABCMeta):
 
         return None
 
+    @property
+    def variables(self) -> dict[str, _variable.Variable]:
+        return dict(self._variables)
+
 
 class SpecificationData(Specification):
     def __init__(self, **variables: dict[str, dict]):
@@ -130,8 +134,9 @@ class SpecificationData(Specification):
                     "Each secrets variable specification must have a dictionary value!"
                 )
 
-            required = specification.get("required") is True
-            nullable = specification.get("nullable") is True
+            required: bool = specification.get("required") is True
+            optional: bool = specification.get("optional") is True
+            nullable: bool = specification.get("nullable") is True
             validate: dict = specification.get("validate") or specification
             pattern: str = validate.get("pattern")
             options: list = validate.get("options")
@@ -142,13 +147,13 @@ class SpecificationData(Specification):
             if isinstance(pattern, str):
                 validator = _validator.ValidatorRegex(
                     pattern=pattern,
-                    required=required is True,
+                    required=(required is True) or (optional is False),
                     nullable=nullable is True,
                 )
             elif isinstance(options, list):
                 validator = _validator.ValidatorOption(
                     options=options,
-                    required=required is True,
+                    required=(required is True) or (optional is False),
                     nullable=nullable is True,
                 )
 
@@ -208,12 +213,16 @@ class SpecificationFile(Specification):
     to be highlighted at startup before any issues related to misconfiguration could
     occur."""
 
+    _filename: str = None
+
     @typing.final
     def __init__(self, *args, filename: str, **kwargs):
         if not isinstance(filename, str):
             raise TypeError("The 'filename' must have a string value!")
         elif not os.path.exists(filename):
             raise RuntimeError(f"The specification file, {filename}, does not exist!")
+
+        self._filename = filename
 
         self._variables: dict[str, _variable.Variable] = {}
 
@@ -227,8 +236,11 @@ class SpecificationFile(Specification):
         )
 
         with open(filename, "r") as handle:
+            number: int = 0
             while line := handle.readline():
                 if len(line := line.strip()) > 0:
+                    number += 1
+
                     if line.startswith("#"):
                         continue
 
@@ -238,19 +250,19 @@ class SpecificationFile(Specification):
                         )
 
                     logger.debug(
-                        " >>> %s => %s (%s) [%s]"
-                        % (
-                            matches.group("name"),
-                            matches.group("pattern"),
-                            matches.group("default"),
-                            "YES" if matches.group("optional") else "NO",
-                        )
+                        ' >>> [%03d] "%s" => %s => %s (%s) [%s]',
+                        number,
+                        line,
+                        matches.group("name"),
+                        matches.group("pattern"),
+                        matches.group("default"),
+                        "YES" if matches.group("optional") else "NO",
                     )
 
                     if matches.group("optional") == "?":
-                        optional[matches.group("name")] = matches.group("pattern")
+                        optional[matches.group("name")] = matches.group("pattern") or ""
                     else:
-                        required[matches.group("name")] = matches.group("pattern")
+                        required[matches.group("name")] = matches.group("pattern") or ""
 
                     if matches.group("nullable") == "?":
                         nullable.append(matches.group("name"))
@@ -273,8 +285,12 @@ class SpecificationFile(Specification):
                 default=default,
             )
 
+    @property
+    def filename(self) -> str:
+        return self._filename
 
-class SpecificationFileJSON(Specification):
+
+class SpecificationFileJSON(SpecificationFile):
     r"""The SpecificationFileJSON class provides support for loading a configuration
     validation specification from a configuration specification file in JSON format.
 
@@ -381,6 +397,8 @@ class SpecificationFileJSON(Specification):
         elif not os.path.exists(filename):
             raise RuntimeError(f"The specification file, {filename}, does not exist!")
 
+        self._filename = filename
+
         self._variables: dict[str, _variable.Variable] = {}
 
         with open(filename, "r") as handle:
@@ -417,7 +435,7 @@ class SpecificationFileJSON(Specification):
                         )
 
 
-class SpecificationFileYAML(Specification):
+class SpecificationFileYAML(SpecificationFile):
     r"""The SpecificationFileYAML class provides support for loading a configuration
     validation specification from a configuration specification file in YAML format.
 
@@ -514,6 +532,8 @@ class SpecificationFileYAML(Specification):
             raise TypeError("The 'filename' must have a string value!")
         elif not os.path.exists(filename):
             raise RuntimeError(f"The specification file, {filename}, does not exist!")
+
+        self._filename = filename
 
         self._variables: dict[str, _variable.Variable] = {}
 
