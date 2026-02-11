@@ -36,7 +36,7 @@ class Secrets(dict):
     def __init__(
         self,
         configuration: _configuration.Configuration = None,
-        specification: str = None,
+        specification: _specification.Specification | str = None,
         callback: callable = None,
         truthy: list[str] | tuple[str] | set[str] = ["YES", "TRUE", "ON"],
         falsey: list[str] | tuple[str] | set[str] = ["NO", "FALSE", "OFF"],
@@ -45,14 +45,12 @@ class Secrets(dict):
         **kwargs,
     ):
         logger.debug(
-            "%s.__init__(configuration: %s, specification: %s, callback: %s, kwargs: %s)"
-            % (
-                self.__class__.__name__,
-                configuration,
-                specification,
-                callback,
-                kwargs,
-            )
+            "%s.__init__(configuration: %s, specification: %s, callback: %s, kwargs: %s)",
+            self.__class__.__name__,
+            configuration,
+            specification,
+            callback,
+            kwargs,
         )
 
         self._secrets: dict[str, object] = {}
@@ -106,16 +104,33 @@ class Secrets(dict):
 
         if specification is None:
             pass
-        elif not isinstance(specification, str):
+        elif isinstance(specification, _specification.Specification):
+            pass
+        elif isinstance(specification, str):
+            pass
+        else:
             raise ConfiguresError(
-                "The 'specification' argument, if specified, must have a string value!"
+                "The 'specification' argument, if specified, must reference a Specification class instance or a string file path for a specification file, not '%s'!"
+                % (type(specification))
             )
 
         if configuration is None:
-            if isinstance(specification, str):
+            if specification is None:
+                configuration = _configuration.Configuration(
+                    specification=_specification.SpecificationData(),
+                )
+            elif isinstance(specification, _specification.Specification):
+                configuration = _configuration.Configuration(
+                    specification=specification,
+                )
+            elif isinstance(specification, str):
                 if not os.path.exists(specification):
                     raise ConfiguresError(
                         f"The 'specification' argument value, {specification}, references a configuration specification file that does not exist!"
+                    )
+                elif not os.path.isfile(specification):
+                    raise ConfiguresError(
+                        f"The 'specification' argument value, {specification}, references a configuration specification path that is not a file!"
                     )
                 elif extension := os.path.splitext(specification)[-1]:
                     if extension == ".spec":
@@ -138,16 +153,12 @@ class Secrets(dict):
                         )
                     else:
                         raise ValueError(
-                            f"The 'specification' argument value, {specification}, references a configuration specification file of an unsupported file type ({extension}); supported types are SPEC, JSON and YAML!"
+                            f"The 'specification' argument value, {specification}, references a configuration specification file of an unsupported file type ({extension}); the currently supported types are SPEC, JSON and YAML!"
                         )
                 else:
                     raise ValueError(
-                        "The 'specification' argument value, if specified, must reference a configuration specification file!"
+                        "The 'specification' argument, if specified, must reference a configuration specification file!"
                     )
-            else:
-                configuration = _configuration.Configuration(
-                    specification=_specification.SpecificationData(),
-                )
         elif isinstance(configuration, _configuration.Configuration):
             for name, value in configuration.validate(secrets=self):
                 logger.debug(" >>> %s => %s" % (name, value))

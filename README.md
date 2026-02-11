@@ -1,15 +1,23 @@
 # Configures: Simplifies Configuration Access & Validation
 
-The Configures library provides a streamlined interface for application configuration, validation and access.
+The Configures library provides a streamlined interface for application configuration,
+validation and access.
 
-The library provides support for specifying expected configuration options, often termed secrets, for an application, allowing for secrets to be marked as required or optional, along with the ability to define the "shape" of the value for each secret, either according to a regular expression or a list of acceptable values, as well as allowing a default fallback value to be specified that will be used if the secret is absent at runtime.
+The library provides support for specifying expected configuration options, often termed
+secrets, for an application, allowing for secrets to be marked as required or optional,
+along with the ability to define the "shape" of the value for each secret, either according
+to a regular expression or a list of acceptable values, as well as allowing a default
+fallback value to be specified that will be used if the secret is absent at runtime.
 
-The Configures library also provides a streamlined and consistent interface to access secrets at runtime, including convenience functionality such as to dynamically cast values to different data types. Furthermore, secrets can be added and modified at runtime if needed.
+The Configures library also provides a streamlined and consistent interface to access
+secrets at runtime, including convenience functionality such as to dynamically cast
+values to different data types. Furthermore, secrets can be added and modified at
+runtime if needed.
 
 ### Requirements
 
-The Configures library has been tested with Python 3.10, 3.11, 3.12 and 3.13. The library
-has not been tested with, nor is it likely compatible with Python 3.9 and earlier.
+The Configures library has been tested with Python 3.10, 3.11, 3.12, 3.13 and 3.14. The
+library has not been tested with, nor is it likely compatible with Python 3.9 and earlier.
 
 ### Installation
 
@@ -22,9 +30,17 @@ using `pip install` by running the following command:
 
 ### Usage Example
 
-To use the Configures library, simply import the library into your project and create an instance of the `Secrets` class. By default the `Secrets` class will import all of the secrets defined in the current runtime environment, and if a configuration specification file has been defined for the application, and if it exists either in one of the standard locations, or if the file's location has been provided to the `Secrets` class, it will load the configuration specification, and validate the secrets that are referenced in the specification against the configuration.
+To use the Configures library, simply import the library into your project and create an
+instance of the `Secrets` class. By default the `Secrets` class will import all of the
+secrets defined in the current runtime environment, and if a configuration specification
+file has been defined for the application, and if it exists either in one of the standard
+locations, or if the file's location has been provided to the `Secrets` class, it will
+load the configuration specification, and validate the secrets that are referenced in
+the specification against the configuration.
 
-The `Secrets` class supports several ways of providing a configuration specification, and offers a range of methods for getting and temporarily setting or modifying secrets within an application at runtime.
+The `Secrets` class supports several ways of providing a configuration specification, and
+offers a range of methods for getting and temporarily setting or modifying secrets within
+an application at runtime.
 
 See the [**Classes & Methods**](#classes-and-methods) section for more information about
 the classes, methods and properties provided by the library.
@@ -39,9 +55,14 @@ print(secrets.get("MY_SECRET", default="<default fallback value>"))
 
 ### Methodology
 
-The Configures library supports verifying that any required secrets exist, and optionally that their values are of the expected type and format as specified in the provided configuration specification file. Secrets can also be marked as optional and will only be validated if they are available.
+The Configures library supports verifying that any required secrets exist, and optionally
+that their values are of the expected type and format as specified in the provided
+configuration specification file. Secrets can also be marked as optional and will only
+be validated if they are available.
 
-The configuration specification file consists of a list of named secrets that *should* or *must* exist as well as optional regular expressions or lists of option values that define the acceptable format and values for each variable.
+The configuration specification file consists of a list of named secrets that *should* or
+*must* exist as well as optional regular expressions or lists of option values that define
+the acceptable format and values for each variable.
 
 A configuration specification file may be provided in one of three supported formats:
 
@@ -49,12 +70,18 @@ A configuration specification file may be provided in one of three supported for
  * a JSON file that provides a dictionary of secrets and their corresponding specifications
  * a YAML file that provides a dictionary of secrets and their corresponding specifications
 
-By being able to provide a listing of the secrets used within an application, to noting which secrets are optional, as well as being able to specify the acceptable values in a concise way, runtime configuration can be validated to ensure it is within the expected range of the software during the very first steps of its initialisation, allowing for configuration issues to be highlighted at startup before any issues related to misconfiguration can occur.
+By being able to provide a listing of the secrets used within an application, to noting
+which secrets are optional, as well as being able to specify the acceptable values in a
+concise way, runtime configuration can be validated to ensure it is within the expected
+range of the software during the very first steps of its initialisation, allowing for
+configuration issues to be highlighted at startup before any issues related to
+misconfiguration can occur.
 
 <a id="classes-and-methods"></a>
 ### Classes & Methods
 
-The Configures library provides several classes which are documented below along with their available methods and properties.
+The Configures library provides several classes which are documented below along with
+their available methods and properties.
 
 #### Secrets Class Methods & Properties
 
@@ -520,4 +547,4 @@ available optional command line arguments.
 
 ### Copyright & License Information
 
-Copyright © 2023–2025 Daniel Sissman; licensed under the MIT License.
+Copyright © 2023–2026 Daniel Sissman; licensed under the MIT License.

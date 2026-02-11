@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import typing
+import os
 
 from configures.logging import logger
 from configures.exceptions import ConfigurationError
@@ -21,8 +22,41 @@ class Configuration(object):
     rectified. This ensures that the configuration is within the expected parameters."""
 
     @typing.final
-    def __init__(self, *args, specification: _specification.Specification, **kwargs):
-        if not isinstance(specification, _specification.Specification):
+    def __init__(
+        self,
+        *args,
+        specification: _specification.Specification | str | dict[str, object],
+        **kwargs,
+    ):
+        if isinstance(specification, str):
+            if os.path.exists(specification) and os.path.isfile(specification):
+                basename, extension = os.path.splitext(os.path.basename(specification))
+
+                if extension == ".spec":
+                    specification = _specification.SpecificationFile(
+                        filename=specification,
+                    )
+                elif extension == ".json":
+                    specification = _specification.SpecificationFileJSON(
+                        filename=specification,
+                    )
+                elif extension == ".yaml" or extension == ".yml":
+                    specification = _specification.SpecificationFileYAML(
+                        filename=specification,
+                    )
+                else:
+                    raise ValueError(
+                        "The 'specification' argument, if specified as a string, must reference a valid specification file path for a supported specification file type!"
+                    )
+            else:
+                raise ValueError(
+                    "The 'specification' argument, if specified as a string, must reference a valid specification file path!"
+                )
+        elif isinstance(specification, dict):
+            specification = _specification.SpecificationData(**specification)
+        elif isinstance(specification, _specification.Specification):
+            pass
+        else:
             raise TypeError(
                 "The 'specification' argument must have a Specification class instance value!"
             )
@@ -30,12 +64,14 @@ class Configuration(object):
         self._specification = specification
 
     @property
+    @typing.final
     def specification(self) -> _specification.Specification:
         """Return the 'specification' property Specification value"""
 
         return self._specification
 
     @specification.setter
+    @typing.final
     def specification(self, specification: _specification.Specification):
         """The 'specification' property can only be set via the constructor"""
 

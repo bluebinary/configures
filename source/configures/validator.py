@@ -131,7 +131,7 @@ class ValidatorOption(Validator):
         if len(typed) > 1:
             raise TypeError("The options must all be of the same type!")
 
-        return typed[0]
+        return typed.pop()
 
     @typed.setter
     def typed(self, typed: type):
@@ -248,9 +248,10 @@ class ValidatorRegex(Validator):
 
         if isinstance(pattern, str):
             pattern = re.compile(pattern)
-        elif not isinstance(pattern, re.Pattern):
+
+        if not isinstance(pattern, re.Pattern):
             raise TypeError(
-                "The regular expression ('regex') must be provided as a 're.Pattern' instance or a valid regex string!"
+                "The regular expression ('regex') must be provided as a 're.Pattern' instance or valid regex string!"
             )
 
         self._pattern = pattern
