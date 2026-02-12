@@ -139,7 +139,7 @@ class Secrets(dict):
                                 filename=specification,
                             )
                         )
-                    elif extension == ".json":
+                    elif extension in [".json", ".jsonx", ".jsonc"]:
                         configuration = _configuration.Configuration(
                             specification=_specification.SpecificationFileJSON(
                                 filename=specification,
@@ -313,7 +313,9 @@ class Secrets(dict):
 
     def empty(self, name: str, default: object = None) -> bool:
         """The 'empty' method supports determining if the named configuration value has
-        an empty value or not, returning True if it does or False otherwise."""
+        an empty value or not, returning True if it does or False otherwise. If the
+        variable has not been specified in the application's configuration, the default
+        value, if specified, will be checked for being an empty string."""
 
         if not isinstance(name, str):
             raise TypeError("The 'name' argument must have a string value!")
@@ -325,7 +327,9 @@ class Secrets(dict):
 
     def nonempty(self, name: str, default: object = None) -> bool:
         """The 'nonempty' method supports determining if the named configuration value
-        has an non-empty value or not, returning True if it does or False otherwise."""
+        has an non-empty value or not, returning True if it does or False otherwise. If
+        the variable has not been specified in the application's configuration, the
+        default value, if specified, will be checked for being a non-empty string."""
 
         if not isinstance(name, str):
             raise TypeError("The 'name' argument must have a string value!")
@@ -339,7 +343,9 @@ class Secrets(dict):
         """The 'null' method provides support for determining if the named configuration
         value has an "null" value or not; this is achieved by comparing the secret value
         against the configured class-level sentinel value. If a match is found then this
-        method returns True or False otherwise."""
+        method returns True or False otherwise. If the variable has not been specified
+        in the application's configuration, the default value, if specified, will be
+        compared against the sentinel value instead."""
 
         return self.get(name=name, default=default) == self.sentinel
 
@@ -349,7 +355,7 @@ class Secrets(dict):
         and if a match is found between the current configuration value and one of the
         truthy values, the method will return True, or False otherwise; if the variable
         has not been specified in the application's configuration, the default value, if
-        specified, will be returned instead."""
+        specified, will be compared against the truthy values instead."""
 
         if not isinstance(name, str):
             raise TypeError("The 'name' argument must have a string value!")
@@ -367,7 +373,7 @@ class Secrets(dict):
         match is found between the current configuration value and one of the falsey
         values, the method will return True, or false otherwise; if the variable has not
         been specified in the application's configuration, the default value, if
-        specified, will be returned instead."""
+        specified, will be compared against the truthy values instead."""
 
         if not isinstance(name, str):
             raise TypeError("The 'name' argument must have a string value!")

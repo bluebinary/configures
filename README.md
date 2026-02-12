@@ -98,35 +98,43 @@ a named secret value, ensuring that a matching secret exists. If no matching sec
 found, then a `ConfigurationError` exception will be raised.
 
 * `empty(name: str, default: object = None)` (`bool`) – The `empty()` method supports
-determining if the named secret has an empty value or not, returning `True` if it
-does or `False` otherwise.
+determining if the named secret has an empty string value or not, returning `True` if it
+does or `False` otherwise. If the secret has not been specified in the application's
+configuration, the `default` value, if specified, will be checked for being an empty
+string instead.
 
 * `nonempty(name: str, default: object = None)` (`bool`) – The `nonempty()` method
-supports determining if the named secret has an non-empty value or not, returning
-`True` if it does or `False` otherwise.
+supports determining if the named secret has an non-empty string value or not, returning
+`True` if it does or `False` otherwise. If the secret has not been specified in the
+application's configuration, the `default` value, if specified, will be checked for
+being a non-empty string instead.
 
 * `null(name: str, default: object = None)` (`bool`) – The `null()` method provides
-support for determining if the named secret has an "null" value or not; this is achieved by comparing the secret value against the configured class-level `sentinel` property value. If a match is found then this method returns `True` or `False` otherwise.
+support for determining if the named secret has an "null" value or not; this is achieved
+by comparing the secret value against the configured class-level `sentinel` property value.
+If a match is found then this method returns `True` or `False` otherwise. If the secret
+has not been specified in the application's configuration,, the `default` value, if
+specified, will be compared against the `sentinel` property value instead.
 
 * `true(name: str, default: object = None)` (`bool`) – The `true()` method provides
 support for determining if the named secret value has a truthy value or not; the truthy
 values are configured at class-level and if a match is found between the current
 configuration value and one of the truthy values, the method will return `True`, or `False`
 otherwise; if the secret has not been specified in the application's configuration,
-the default value, if specified, will be returned instead.
+the `default` value, if specified, will be compared against the truthy values instead.
 
 * `false(name: str, default: object = None)` (`bool`) – The `false()` method supports
 determining if the named configuration value has a falsey value or not; the falsey values
 are configured at class-level and if a match is found between the current configuration
 value and one of the falsey values, the method will return True, or false otherwise; if
-the secret has not been specified in the application's configuration, the default value,
-if specified, will be returned instead.
+the secret has not been specified in the application's configuration, the `default` value,
+if specified, will be compared against the falsey values instead.
 
 * `int(name: str, default: object = None)` (`int`) – The `int()` method provides support
-for returning the named secret cast to an `int` value, if the secret has been specified, otherwise the default value, if specified, will be returned instead.
+for returning the named secret cast to an `int` value, if the secret has been specified, otherwise the `default` value, if specified, will be returned instead.
 
 * `float(name: str, default: object = None)` (`float`) – The `float()` method provides support
-for returning the named secret cast to an `float` value, if the secret has been specified, otherwise the default value, if specified, will be returned instead.
+for returning the named secret cast to a `float` value, if the secret has been specified, otherwise the `default` value, if specified, will be returned instead.
 
 * `combine(variables: list[str], separator: str = None, strip: bool = False)` (`str`) – The `combine()` method provides support for combining the string values from multiple secrets, joining parts with an optional separator character, and optionally stripping the separator character from the beginning and end of each secret value.
 
@@ -223,6 +231,11 @@ secrets specification held by the Specification instance.
 
 * `items()` (`generator`) – The `items()` method supports obtaining the items for the
 secrets specification held by the Specification instance via a generator.
+
+The `Specification` class offers the following properties:
+
+* `variables` (`dict[str, Variable]`) – The `variables` property returns a reference
+to a copy of the `Specification` class' internal dictionary of variables, keyed by name.
 
 The `Specification` class also offers dictionary-style access to the secrets specifications
 using standard dictionary patterns for getting, counting and checking for existence. The
@@ -322,9 +335,19 @@ instance that is associated with the variable.
 The configuration specification files consists of a list of named secret that *should* or *must* exist as well as optional regular expressions that define the acceptable format and values for each configuration option.
 
 A configuration specification file may be provided in one of three supported formats: an
-`.env` style file that lists one secret per line and its corresponding specification; a
-JSON file that provides a dictionary of secrets and their corresponding specifications, or a
-YAML file that provides a dictionary of secrets and their corresponding specifications.
+`.env` style file that lists one secret per line and its corresponding specification with
+a `.spec` file name extension; a JSON file that provides a dictionary of secrets and their
+corresponding specifications, with a `.json` file name extension, or a YAML file that
+provides a dictionary of secrets and their corresponding specifications, with a `.yaml` or
+`.yml` file name extension. These are summarized in the table below:
+
+| Specification Format | File Extensions   | Summary                                                          |
+|----------------------|:-----------------:|------------------------------------------------------------------|
+| SPEC File            | `.spec`           | Defines variables and their specification in an `.env` style way |
+| JSON File            | `.json` 💡        | Defines variables and their specification in a dictionary format |
+| YAML File            | `.yaml` or `.yml` | Defines variables and their specification in a dictionary format |
+
+💡 Note: For JSON Specification Files, the Configures library also supports extended JSON files with single-line and multi-line comments as well as trailing commas; unquoted keys are not currently supported. These specification files may be specified with either the standard `.json` file name extension, the `.jsonc` file name extension made popular by Microsoft®, or a `.jsonx` (JSON-extended) file name extension.
 
 ### Configuration Specification: Environment Variable-Style File
 

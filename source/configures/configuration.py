@@ -36,11 +36,11 @@ class Configuration(object):
                     specification = _specification.SpecificationFile(
                         filename=specification,
                     )
-                elif extension == ".json":
+                elif extension in [".json", ".jsonx", ".jsonc"]:
                     specification = _specification.SpecificationFileJSON(
                         filename=specification,
                     )
-                elif extension == ".yaml" or extension == ".yml":
+                elif extension in [".yaml", ".yml"]:
                     specification = _specification.SpecificationFileYAML(
                         filename=specification,
                     )
