@@ -4,7 +4,7 @@ import abc
 import os
 import re
 import typing
-import json
+import jsonxox
 import yaml
 
 from configures.logging import logger
@@ -402,7 +402,7 @@ class SpecificationFileJSON(SpecificationFile):
         self._variables: dict[str, _variable.Variable] = {}
 
         with open(filename, "r") as handle:
-            if specifications := json.load(handle):
+            if specifications := jsonxox.load(handle):
                 for name, specification in specifications.items():
                     required = specification.get("required") is True
                     nullable = specification.get("nullable") is True
